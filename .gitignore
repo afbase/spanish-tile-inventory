@@ -16,3 +16,4 @@ Cargo.lock
 #zip files and shell scripts
 *.zip
 *.sh
+*/dist/
