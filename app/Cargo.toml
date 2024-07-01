@@ -1,0 +1,9 @@
+[package]
+name = "app"
+version.workspace = true
+edition = "2021"
+
+[dependencies]
+yew = { workspace = true }
+components = { path = "../components" }
+data = { path = "../data" }

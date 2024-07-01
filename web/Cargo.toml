@@ -1,0 +1,11 @@
+[package]
+name = "web"
+version.workspace =  true
+edition = "2021"
+
+[dependencies]
+app = { path = "../app" }
+data = { path = "../data" }
+utils = { path = "../utils" }
+wasm-bindgen = { workspace = true }
+yew = { workspace = true }
