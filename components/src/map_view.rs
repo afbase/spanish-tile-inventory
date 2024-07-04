@@ -1,7 +1,7 @@
 use data::inventory::TileInventory;
 use js_sys::{Array, Object, Reflect};
-use wasm_bindgen::{closure::Closure, JsCast, JsValue};
-use web_sys::{Element, HtmlElement};
+use wasm_bindgen::{closure::Closure, JsValue};
+use web_sys::{Element};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
@@ -95,7 +95,7 @@ impl MapView {
 
             let add_to = Reflect::get(&marker, &JsValue::from_str("addTo")).unwrap();
             js_sys::Function::new_with_args("map", "this.addTo(map)")
-                .call1(&add_to, &self.map.as_ref().unwrap())
+                .call1(&add_to, self.map.as_ref().unwrap())
                 .unwrap();
 
             // Add click event listener
