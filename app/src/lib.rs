@@ -1,3 +1,5 @@
+use std::str::from_utf8;
+
 use components::InventoryView;
 use data::inventory::TileInventory;
 use gloo_console as console;
@@ -22,7 +24,8 @@ impl Component for App {
         // Load inventory data
         ctx.link().send_future(async {
             let csv_data = include_bytes!("../../inventory.csv");
-            let inventory = parse_csv(csv_data).expect("Failed to parse CSV data");
+            let csv_data_str = from_utf8(csv_data).unwrap_or("");
+            let inventory = parse_csv(csv_data_str).expect("Failed to parse CSV data");
             Msg::InventoryLoaded(inventory)
         });
 
