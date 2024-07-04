@@ -1,11 +1,13 @@
-use yew::prelude::*;
-use web_sys::{Element, HtmlElement};
-use wasm_bindgen::{JsCast, JsValue, closure::Closure};
-use js_sys::{Object, Reflect, Array, Promise};
-use leaflet::{Map, MapOptions, LatLng, TileLayer, Marker, Icon, IconOptions, Popup, PopupOptions, Point};
+use crate::js_bindings::{geocodeAddress, initGeoSearch};
 use data::inventory::TileInventory;
+use js_sys::{Array, Object, Promise, Reflect};
+use leaflet::{
+    Icon, IconOptions, LatLng, Map, MapOptions, Marker, Point, Popup, PopupOptions, TileLayer,
+};
+use wasm_bindgen::{closure::Closure, JsCast, JsValue};
 use wasm_bindgen_futures::spawn_local;
-use crate::js_bindings::{initGeoSearch, geocodeAddress};
+use web_sys::{Element, HtmlElement};
+use yew::prelude::*;
 
 pub struct MapView {
     map_ref: NodeRef,
@@ -33,7 +35,7 @@ impl Component for MapView {
 
     fn create(ctx: &Context<Self>) -> Self {
         ctx.link().send_message(Msg::InitMap);
-        
+
         Self {
             map_ref: NodeRef::default(),
             map: None,
@@ -109,14 +111,17 @@ impl MapView {
         if let Some(map) = &self.map {
             for (item, latlng) in &self.geocoded_inventory {
                 let marker = Marker::new(latlng);
-                
+
                 let mut icon_options = IconOptions::new();
                 icon_options.set_icon_url("/static/markers/marker-icon-2x-blue.png".to_string());
                 icon_options.set_icon_size(Point::new(25.0, 41.0));
                 let icon = Icon::new(&icon_options);
                 marker.set_icon(&icon);
 
-                let popup_content = format!("{}: {} damaged tiles", item.street_sign, item.number_of_tiles_damaged);
+                let popup_content = format!(
+                    "{}: {} damaged tiles",
+                    item.street_sign, item.number_of_tiles_damaged
+                );
                 let popup_options = PopupOptions::new();
                 let popup = Popup::new(&popup_options, None);
                 popup.set_content(&JsValue::from_str(&popup_content));
@@ -140,7 +145,11 @@ impl MapView {
 
     fn update_markers(&self, ctx: &Context<Self>) {
         for ((item, _), marker) in self.geocoded_inventory.iter().zip(self.markers.iter()) {
-            let is_selected = ctx.props().selected_item.as_ref().map_or(false, |selected| selected.id == item.id);
+            let is_selected = ctx
+                .props()
+                .selected_item
+                .as_ref()
+                .map_or(false, |selected| selected.id == item.id);
             let icon_url = if is_selected {
                 "/static/markers/marker-icon-2x-red.png"
             } else {

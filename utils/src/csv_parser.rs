@@ -6,7 +6,7 @@ pub fn parse_csv(csv_data: &[u8]) -> Result<Vec<TileInventory>, csv::Error> {
         .has_headers(true)
         .flexible(true)
         .from_reader(csv_data);
-    
+
     let mut inventory: Vec<TileInventory> = Vec::new();
 
     for result in reader.deserialize() {
