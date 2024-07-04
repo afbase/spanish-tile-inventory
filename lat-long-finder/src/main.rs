@@ -1,6 +1,6 @@
-use structopt::StructOpt;
 use std::path::PathBuf;
-use utils::csv_parser::{parse_csv, geocode_inventory, write_csv, CsvParserError};
+use structopt::StructOpt;
+use utils::csv_parser::{geocode_inventory, parse_csv, write_csv, CsvParserError};
 
 #[derive(StructOpt)]
 struct Cli {
