@@ -1,8 +1,10 @@
-use yew::prelude::*;
-use web_sys::{Element, HtmlElement};
-use wasm_bindgen::{JsCast, closure::Closure, JsValue};
-use leaflet::{LatLng, Map, MapOptions, Marker, TileLayer, Popup, PopupOptions, Icon, IconOptions, Point};
 use data::inventory::TileInventory;
+use leaflet::{
+    Icon, IconOptions, LatLng, Map, MapOptions, Marker, Point, Popup, PopupOptions, TileLayer,
+};
+use wasm_bindgen::{closure::Closure, JsCast, JsValue};
+use web_sys::{Element, HtmlElement};
+use yew::prelude::*;
 
 pub struct MapView {
     map_ref: NodeRef,
@@ -84,7 +86,10 @@ impl MapView {
     fn create_markers(&mut self, ctx: &Context<Self>, map: &Map) {
         for item in &ctx.props().inventory {
             let marker = Marker::new(&LatLng::new(item.latitude, item.longitude));
-            let popup_content = format!("{}: {} damaged tiles", item.street_sign, item.number_of_tiles_damaged);
+            let popup_content = format!(
+                "{}: {} damaged tiles",
+                item.street_sign, item.number_of_tiles_damaged
+            );
             let popup_options = PopupOptions::new();
             let popup = Popup::new(&popup_options, None);
             popup.set_content(&JsValue::from_str(&popup_content));
@@ -95,7 +100,7 @@ impl MapView {
             let closure = Closure::wrap(Box::new(move || {
                 on_item_select.emit(Some(item_clone.clone()));
             }) as Box<dyn Fn()>);
-            
+
             marker.on("click", closure.as_ref().unchecked_ref());
             closure.forget();
 
@@ -108,7 +113,7 @@ impl MapView {
         let selected_item = ctx.props().selected_item.as_ref();
         for (item, marker) in ctx.props().inventory.iter().zip(self.markers.iter()) {
             let is_selected = selected_item.map_or(false, |selected| selected.id == item.id);
-            let mut icon_options = IconOptions::new();
+            let icon_options = IconOptions::new();
             icon_options.set_icon_url(if is_selected {
                 "/static/markers/marker-icon-2x-red.png".to_string()
             } else {

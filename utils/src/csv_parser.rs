@@ -24,7 +24,7 @@ fn geocode(address: &str) -> Result<(f64, f64), Box<dyn std::error::Error>> {
         "https://nominatim.openstreetmap.org/search?format=json&q={},New Orleans",
         address
     );
-    let json_blob = client.get(&url).send()?.text()?;
+    let json_blob = client.get(url).send()?.text()?;
     let response: Value = serde_json::from_str(&json_blob)?;
 
     if let Some(first_result) = response.as_array().and_then(|arr| arr.first()) {

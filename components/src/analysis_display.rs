@@ -1,6 +1,6 @@
-use yew::prelude::*;
 use data::inventory::TileInventory;
 use web_sys::HtmlSelectElement;
+use yew::prelude::*;
 
 pub struct AnalysisDisplay {
     selected_street: Option<String>,
@@ -47,14 +47,19 @@ impl Component for AnalysisDisplay {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let street_signs: Vec<String> = ctx.props().inventory.iter()
+        let street_signs: Vec<String> = ctx
+            .props()
+            .inventory
+            .iter()
             .map(|item| item.street_sign.clone())
             .collect::<std::collections::HashSet<_>>()
             .into_iter()
             .collect();
 
         let addresses: Vec<String> = if let Some(street) = &self.selected_street {
-            ctx.props().inventory.iter()
+            ctx.props()
+                .inventory
+                .iter()
                 .filter(|item| &item.street_sign == street)
                 .map(|item| item.street_address.clone())
                 .collect()
@@ -95,10 +100,15 @@ impl Component for AnalysisDisplay {
 
 impl AnalysisDisplay {
     fn notify_selection(&self, ctx: &Context<Self>) {
-        let selected_item = ctx.props().inventory.iter().find(|item| {
-            Some(&item.street_sign) == self.selected_street.as_ref() &&
-            Some(&item.street_address) == self.selected_address.as_ref()
-        }).cloned();
+        let selected_item = ctx
+            .props()
+            .inventory
+            .iter()
+            .find(|item| {
+                Some(&item.street_sign) == self.selected_street.as_ref()
+                    && Some(&item.street_address) == self.selected_address.as_ref()
+            })
+            .cloned();
         ctx.props().on_item_select.emit(selected_item);
     }
 

@@ -6,8 +6,8 @@ pub use analysis_display::AnalysisDisplay;
 pub use js_bindings::{geocodeAddress, initGeoSearch};
 pub use map_view::MapView;
 
-use yew::prelude::*;
 use data::inventory::TileInventory;
+use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct InventoryViewProps {
@@ -43,15 +43,15 @@ impl Component for InventoryView {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let on_item_select = ctx.link().callback(Msg::ItemSelected);
-        
+
         html! {
             <div>
-                <MapView 
-                    inventory={ctx.props().inventory.clone()} 
+                <MapView
+                    inventory={ctx.props().inventory.clone()}
                     selected_item={self.selected_item.clone()}
                     on_item_select={on_item_select.clone()}
                 />
-                <AnalysisDisplay 
+                <AnalysisDisplay
                     inventory={ctx.props().inventory.clone()}
                     selected_item={self.selected_item.clone()}
                     on_item_select={on_item_select}

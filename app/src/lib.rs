@@ -1,8 +1,8 @@
-use yew::prelude::*;
+use components::InventoryView;
 use data::inventory::TileInventory;
-use components::{MapView, InventoryView};
-use utils::csv_parser::parse_csv;
 use gloo_console as console;
+use utils::csv_parser::parse_csv;
+use yew::prelude::*;
 
 pub struct App {
     inventory: Vec<TileInventory>,
