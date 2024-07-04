@@ -1,9 +1,12 @@
-use yew::prelude::*;
-use web_sys::{Element, HtmlElement};
-use wasm_bindgen::{JsCast, JsValue, closure::Closure};
-use js_sys::{Object, Reflect, Array};
-use leaflet::{Map, MapOptions, LatLng, TileLayer, TileLayerOptions, Marker, Icon, IconOptions, Popup, PopupOptions, Point, Layer};
 use data::inventory::TileInventory;
+use js_sys::{Array, Object, Reflect};
+use leaflet::{
+    Icon, IconOptions, LatLng, Layer, Map, MapOptions, Marker, Point, Popup, PopupOptions,
+    TileLayer, TileLayerOptions,
+};
+use wasm_bindgen::{closure::Closure, JsCast, JsValue};
+use web_sys::{Element, HtmlElement};
+use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -67,14 +70,17 @@ impl MapView {
             for item in &ctx.props().inventory {
                 let lat_lng = LatLng::new(item.latitude, item.longitude);
                 let marker = Marker::new(&lat_lng);
-                
+
                 let mut icon_options = IconOptions::new();
                 icon_options.set_icon_url("/static/markers/marker-icon-2x-blue.png".to_string());
                 icon_options.set_icon_size(Point::new(25.0, 41.0));
                 let icon = Icon::new(&icon_options);
                 marker.set_icon(&icon);
 
-                let popup_content = format!("{}: {} damaged tiles", item.street_sign, item.number_of_tiles_damaged);
+                let popup_content = format!(
+                    "{}: {} damaged tiles",
+                    item.street_sign, item.number_of_tiles_damaged
+                );
                 let popup_options = PopupOptions::new();
                 let popup = Popup::new(&popup_options, None);
                 popup.set_content(&JsValue::from_str(&popup_content));
@@ -98,7 +104,11 @@ impl MapView {
 
     fn update_markers(&self, ctx: &Context<Self>) {
         for (index, item) in ctx.props().inventory.iter().enumerate() {
-            let is_selected = ctx.props().selected_item.as_ref().map_or(false, |selected| selected.id == item.id);
+            let is_selected = ctx
+                .props()
+                .selected_item
+                .as_ref()
+                .map_or(false, |selected| selected.id == item.id);
             let icon_url = if is_selected {
                 "/static/markers/marker-icon-2x-red.png"
             } else {
