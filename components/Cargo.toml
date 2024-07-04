@@ -5,8 +5,10 @@ edition = "2021"
 
 [dependencies]
 data = { path = "../data" }
+gloo-net = { workspace=true }
 js-sys = { workspace = true }
 leaflet = { workspace = true }
+serde = { workspace=true }
 wasm-bindgen = { workspace = true }
 wasm-bindgen-futures = { workspace = true }
 web-sys = { workspace = true }
