@@ -1,7 +1,7 @@
 use csv::{Reader, Writer};
 use data::inventory::TileInventory;
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::path::Path;
 use std::time::Duration;
 use thiserror::Error;
