@@ -1,6 +1,6 @@
 use crate::js_bindings::{geocodeAddress, initGeoSearch};
 use data::inventory::TileInventory;
-use js_sys::{Array, Object, Promise, Reflect};
+use js_sys::{Reflect};
 use leaflet::{
     Icon, IconOptions, LatLng, Map, MapOptions, Marker, Point, Popup, PopupOptions, TileLayer,
 };
@@ -112,7 +112,7 @@ impl MapView {
             for (item, latlng) in &self.geocoded_inventory {
                 let marker = Marker::new(latlng);
 
-                let mut icon_options = IconOptions::new();
+                let icon_options = IconOptions::new();
                 icon_options.set_icon_url("/static/markers/marker-icon-2x-blue.png".to_string());
                 icon_options.set_icon_size(Point::new(25.0, 41.0));
                 let icon = Icon::new(&icon_options);
@@ -156,7 +156,7 @@ impl MapView {
                 "/static/markers/marker-icon-2x-blue.png"
             };
 
-            let mut icon_options = IconOptions::new();
+            let icon_options = IconOptions::new();
             icon_options.set_icon_url(icon_url.to_string());
             icon_options.set_icon_size(Point::new(25.0, 41.0));
             let icon = Icon::new(&icon_options);
