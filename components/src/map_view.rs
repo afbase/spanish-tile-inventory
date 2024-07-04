@@ -1,8 +1,7 @@
 use data::inventory::TileInventory;
-use js_sys::{Array, Object, Reflect};
 use leaflet::{
-    Icon, IconOptions, LatLng, Layer, Map, MapOptions, Marker, Point, Popup, PopupOptions,
-    TileLayer, TileLayerOptions,
+    Icon, IconOptions, LatLng, Map, MapOptions, Marker, Point, Popup, PopupOptions,
+    TileLayer,
 };
 use wasm_bindgen::{closure::Closure, JsCast, JsValue};
 use web_sys::{Element, HtmlElement};
@@ -71,7 +70,7 @@ impl MapView {
                 let lat_lng = LatLng::new(item.latitude, item.longitude);
                 let marker = Marker::new(&lat_lng);
 
-                let mut icon_options = IconOptions::new();
+                let icon_options = IconOptions::new();
                 icon_options.set_icon_url("/static/markers/marker-icon-2x-blue.png".to_string());
                 icon_options.set_icon_size(Point::new(25.0, 41.0));
                 let icon = Icon::new(&icon_options);
@@ -115,7 +114,7 @@ impl MapView {
                 "/static/markers/marker-icon-2x-blue.png"
             };
 
-            let mut icon_options = IconOptions::new();
+            let icon_options = IconOptions::new();
             icon_options.set_icon_url(icon_url.to_string());
             icon_options.set_icon_size(Point::new(25.0, 41.0));
             let icon = Icon::new(&icon_options);
