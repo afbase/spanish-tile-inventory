@@ -6,4 +6,3 @@ edition = "2021"
 [dependencies]
 csv = { workspace = true }
 data = { path = "../data" }
-wasm-bindgen =  { workspace = true }

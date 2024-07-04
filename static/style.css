@@ -4,25 +4,30 @@ body {
     padding: 0;
 }
 
-.app-container {
+.container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-h1 {
-    text-align: center;
-}
-
-.file-upload {
-    margin-bottom: 20px;
-}
-
-.analysis-display {
-    margin-bottom: 20px;
-}
-
 .map-container {
-    height: 500px;
+    height: 400px;
     margin-bottom: 20px;
+}
+
+.photo-viewer img {
+    max-width: 100%;
+    height: auto;
+}
+
+.btn {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
 }

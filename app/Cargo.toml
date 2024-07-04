@@ -7,3 +7,4 @@ edition = "2021"
 yew = { workspace = true }
 components = { path = "../components" }
 data = { path = "../data" }
+utils = { path = "../utils" }
