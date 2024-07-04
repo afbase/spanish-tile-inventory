@@ -7,4 +7,7 @@ edition = "2021"
 csv = { workspace = true }
 data = { path = "../data" }
 reqwest = { workspace = true, features=["blocking"] }
+serde = { workspace=true }
 serde_json = { workspace = true }
+tokio = { workspace = true }
+urlencoding = { workspace = true }
