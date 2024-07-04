@@ -119,7 +119,7 @@ impl AnalysisDisplay {
                     <h3>{"Selected Item"}</h3>
                     <p>{format!("Street Sign: {}", item.street_sign)}</p>
                     <p>{format!("Address: {}", item.street_address)}</p>
-                    <p>{format!("Damaged Tiles: {}", item.number_of_tiles_damaged)}</p>
+                    <p>{format!("Damaged Tiles: {:?}", item.number_of_tiles_damaged)}</p>
                     <p>{format!("Latitude: {:?}", item.latitude)}</p>
                     <p>{format!("Longitude: {:?}", item.longitude)}</p>
                 </div>

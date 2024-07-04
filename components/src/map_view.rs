@@ -92,7 +92,7 @@ impl MapView {
             );
             let marker = Marker::new(&LatLng::new(lat, long));
             let popup_content = format!(
-                "{}: {} damaged tiles",
+                "{}: {:?} damaged tiles",
                 item.street_sign, item.number_of_tiles_damaged
             );
             let popup_options = PopupOptions::new();
