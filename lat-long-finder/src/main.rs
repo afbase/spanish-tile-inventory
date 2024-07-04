@@ -1,9 +1,6 @@
-use csv::{Reader, Writer};
-use data::inventory::TileInventory;
-use std::error::Error;
-use std::path::PathBuf;
 use structopt::StructOpt;
-use utils::csv_parser::geocode_inventory;
+use std::path::PathBuf;
+use utils::csv_parser::{parse_csv, geocode_inventory, write_csv, CsvParserError};
 
 #[derive(StructOpt)]
 struct Cli {
@@ -14,34 +11,26 @@ struct Cli {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() {
+    if let Err(err) = run().await {
+        eprintln!("Error: {}", err);
+        std::process::exit(1);
+    }
+}
+
+async fn run() -> Result<(), CsvParserError> {
     let args = Cli::from_args();
 
-    let mut reader = Reader::from_path(&args.input)?;
-    let mut writer = Writer::from_path(&args.output)?;
+    println!("Reading CSV from {:?}", args.input);
+    let mut inventory = parse_csv(&args.input)?;
+    println!("Successfully read {} records", inventory.len());
 
-    // Read all records into memory
-    let mut records: Vec<TileInventory> = reader.deserialize().collect::<Result<_, _>>()?;
+    println!("Geocoding addresses...");
+    geocode_inventory(&mut inventory).await?;
+    println!("Geocoding complete");
 
-    // Geocode all addresses
-    geocode_inventory(&mut records).await?;
-
-    // Write the header
-    let mut headers = reader.headers()?.clone();
-    if !headers.iter().any(|h| h == "latitude") {
-        headers.push_field("latitude");
-    }
-    if !headers.iter().any(|h| h == "longitude") {
-        headers.push_field("longitude");
-    }
-    writer.write_record(&headers)?;
-
-    // Write the records with latitude and longitude
-    for record in records {
-        writer.serialize(record)?;
-    }
-
-    writer.flush()?;
+    println!("Writing results to {:?}", args.output);
+    write_csv(&args.output, &inventory)?;
     println!("Processing complete. Output written to {:?}", args.output);
 
     Ok(())
