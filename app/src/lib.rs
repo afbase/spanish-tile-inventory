@@ -1,7 +1,8 @@
-use components::{AnalysisDisplay, MapView};
-use data::inventory::TileInventory;
-use utils::csv_parser::parse_csv;
 use yew::prelude::*;
+use data::inventory::TileInventory;
+use components::{MapView, InventoryView};
+use utils::csv_parser::parse_csv;
+use gloo_console as console;
 
 pub struct App {
     inventory: Vec<TileInventory>,
@@ -9,8 +10,8 @@ pub struct App {
 }
 
 pub enum Msg {
-    ItemSelected(Option<TileInventory>),
     InventoryLoaded(Vec<TileInventory>),
+    ItemSelected(Option<TileInventory>),
 }
 
 impl Component for App {
@@ -30,41 +31,32 @@ impl Component for App {
             selected_item: None,
         }
     }
+
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
-            Msg::ItemSelected(item) => {
-                self.selected_item = item;
-                true
-            }
             Msg::InventoryLoaded(inventory) => {
                 self.inventory = inventory;
+                true
+            }
+            Msg::ItemSelected(item) => {
+                self.selected_item = item;
+                if let Some(selected_item) = &self.selected_item {
+                    console::log!("Selected item ID:", selected_item.id);
+                    console::log!("Selected item Street Sign:", &selected_item.street_sign);
+                    // Add more fields as needed
+                } else {
+                    console::log!("No item selected");
+                }
                 true
             }
         }
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let on_item_select = ctx.link().callback(Msg::ItemSelected);
-
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <div class="container mt-4">
                 <h1 class="text-center mb-4">{"Spanish Tile Inventory Analysis"}</h1>
-                <div class="row">
-                    <div class="col-md-6">
-                        <AnalysisDisplay
-                            inventory={self.inventory.clone()}
-                            selected_item={self.selected_item.clone()}
-                            on_item_select={on_item_select.clone()}
-                        />
-                    </div>
-                    <div class="col-md-6">
-                        <MapView
-                            inventory={self.inventory.clone()}
-                            selected_item={self.selected_item.clone()}
-                            on_item_select={on_item_select}
-                        />
-                    </div>
-                </div>
+                <InventoryView inventory={self.inventory.clone()} />
             </div>
         }
     }
