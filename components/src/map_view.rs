@@ -1,11 +1,24 @@
-use data::inventory::TileInventory;
-use leaflet::{
-    Icon, IconOptions, LatLng, Map, MapOptions, Marker, Point, Popup, PopupOptions,
-    TileLayer,
-};
-use wasm_bindgen::{closure::Closure, JsCast, JsValue};
-use web_sys::{Element, HtmlElement};
 use yew::prelude::*;
+use web_sys::{Element, HtmlElement};
+use wasm_bindgen::{JsCast, JsValue, closure::Closure};
+use js_sys::{Object, Reflect, Array, Promise};
+use leaflet::{Map, MapOptions, LatLng, TileLayer, Marker, Icon, IconOptions, Popup, PopupOptions, Point};
+use data::inventory::TileInventory;
+use wasm_bindgen_futures::spawn_local;
+use crate::js_bindings::{initGeoSearch, geocodeAddress};
+
+pub struct MapView {
+    map_ref: NodeRef,
+    map: Option<Map>,
+    markers: Vec<Marker>,
+    geocoded_inventory: Vec<(TileInventory, LatLng)>,
+}
+
+pub enum Msg {
+    InitMap,
+    DataGeocoded(Vec<(TileInventory, LatLng)>),
+    UpdateMarkers,
+}
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -14,21 +27,43 @@ pub struct Props {
     pub on_item_select: Callback<Option<TileInventory>>,
 }
 
-pub struct MapView {
-    map_ref: NodeRef,
-    map: Option<Map>,
-    markers: Vec<Marker>,
-}
-
 impl Component for MapView {
-    type Message = ();
+    type Message = Msg;
     type Properties = Props;
 
-    fn create(_ctx: &Context<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
+        ctx.link().send_message(Msg::InitMap);
+        
         Self {
             map_ref: NodeRef::default(),
             map: None,
             markers: vec![],
+            geocoded_inventory: vec![],
+        }
+    }
+
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            Msg::InitMap => {
+                let inventory = ctx.props().inventory.clone();
+                let link = ctx.link().clone();
+                spawn_local(async move {
+                    let geocoded = geocode_inventory(&inventory).await;
+                    link.send_message(Msg::DataGeocoded(geocoded));
+                });
+                false
+            }
+            Msg::DataGeocoded(geocoded) => {
+                self.geocoded_inventory = geocoded;
+                if self.map.is_some() {
+                    self.add_markers(ctx);
+                }
+                true
+            }
+            Msg::UpdateMarkers => {
+                self.update_markers(ctx);
+                true
+            }
         }
     }
 
@@ -40,11 +75,14 @@ impl Component for MapView {
 
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
         if first_render {
-            let map_element = self.map_ref.cast::<Element>().unwrap();
-            self.init_map(map_element);
-            self.add_markers(ctx);
+            if let Some(map_element) = self.map_ref.cast::<Element>() {
+                self.init_map(map_element);
+                if !self.geocoded_inventory.is_empty() {
+                    self.add_markers(ctx);
+                }
+            }
         }
-        self.update_markers(ctx);
+        ctx.link().send_message(Msg::UpdateMarkers);
     }
 }
 
@@ -61,25 +99,24 @@ impl MapView {
         let tile_layer = TileLayer::new(tile_layer_url);
         map.add_layer(&tile_layer);
 
+        // Initialize GeoSearch
+        initGeoSearch(map.as_ref());
+
         self.map = Some(map);
     }
 
     fn add_markers(&mut self, ctx: &Context<Self>) {
         if let Some(map) = &self.map {
-            for item in &ctx.props().inventory {
-                let lat_lng = LatLng::new(item.latitude, item.longitude);
-                let marker = Marker::new(&lat_lng);
-
-                let icon_options = IconOptions::new();
+            for (item, latlng) in &self.geocoded_inventory {
+                let marker = Marker::new(latlng);
+                
+                let mut icon_options = IconOptions::new();
                 icon_options.set_icon_url("/static/markers/marker-icon-2x-blue.png".to_string());
                 icon_options.set_icon_size(Point::new(25.0, 41.0));
                 let icon = Icon::new(&icon_options);
                 marker.set_icon(&icon);
 
-                let popup_content = format!(
-                    "{}: {} damaged tiles",
-                    item.street_sign, item.number_of_tiles_damaged
-                );
+                let popup_content = format!("{}: {} damaged tiles", item.street_sign, item.number_of_tiles_damaged);
                 let popup_options = PopupOptions::new();
                 let popup = Popup::new(&popup_options, None);
                 popup.set_content(&JsValue::from_str(&popup_content));
@@ -102,26 +139,41 @@ impl MapView {
     }
 
     fn update_markers(&self, ctx: &Context<Self>) {
-        for (index, item) in ctx.props().inventory.iter().enumerate() {
-            let is_selected = ctx
-                .props()
-                .selected_item
-                .as_ref()
-                .map_or(false, |selected| selected.id == item.id);
+        for ((item, _), marker) in self.geocoded_inventory.iter().zip(self.markers.iter()) {
+            let is_selected = ctx.props().selected_item.as_ref().map_or(false, |selected| selected.id == item.id);
             let icon_url = if is_selected {
                 "/static/markers/marker-icon-2x-red.png"
             } else {
                 "/static/markers/marker-icon-2x-blue.png"
             };
 
-            let icon_options = IconOptions::new();
+            let mut icon_options = IconOptions::new();
             icon_options.set_icon_url(icon_url.to_string());
             icon_options.set_icon_size(Point::new(25.0, 41.0));
             let icon = Icon::new(&icon_options);
 
-            if let Some(marker) = self.markers.get(index) {
-                marker.set_icon(&icon);
+            marker.set_icon(&icon);
+        }
+    }
+}
+
+async fn geocode_inventory(inventory: &[TileInventory]) -> Vec<(TileInventory, LatLng)> {
+    let mut geocoded = Vec::new();
+    for item in inventory {
+        let address = format!("{}, New Orleans, LA", item.street_address);
+        if let Ok(result) = wasm_bindgen_futures::JsFuture::from(geocodeAddress(&address)).await {
+            if let Some(coords) = result.dyn_ref::<js_sys::Object>() {
+                let lat = Reflect::get(coords, &JsValue::from_str("lat"))
+                    .unwrap()
+                    .as_f64()
+                    .unwrap();
+                let lng = Reflect::get(coords, &JsValue::from_str("lng"))
+                    .unwrap()
+                    .as_f64()
+                    .unwrap();
+                geocoded.push((item.clone(), LatLng::new(lat, lng)));
             }
         }
     }
+    geocoded
 }
