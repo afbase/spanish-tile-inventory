@@ -1,0 +1,12 @@
+[package]
+name = "lat-long-finder"
+edition = "2021"
+version.workspace = true
+
+[dependencies]
+utils = { path = "../utils" }
+data = { path = "../data" }
+csv = { workspace = true }
+structopt = { workspace = true }
+tokio = { workspace = true }
+urlencoding = { workspace = true }

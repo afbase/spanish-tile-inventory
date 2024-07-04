@@ -6,5 +6,5 @@ edition = "2021"
 [dependencies]
 csv = { workspace = true }
 data = { path = "../data" }
-reqwest = { workspace = true }
+reqwest = { workspace = true, features=["blocking"] }
 serde_json = { workspace = true }

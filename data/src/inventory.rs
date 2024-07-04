@@ -13,8 +13,6 @@ pub struct TileInventory {
     pub sign_condition: String,
     #[serde(rename = "Number of Tiles Damaged")]
     pub number_of_tiles_damaged: u32,
-    pub latitude: f64,
-    pub longitude: f64,
     #[serde(rename = "Photo 1", deserialize_with = "deserialize_optional_path")]
     pub photo_1: Option<PathBuf>,
     #[serde(rename = "Photo 2", deserialize_with = "deserialize_optional_path")]
@@ -25,6 +23,10 @@ pub struct TileInventory {
     pub photo_4: Option<PathBuf>,
     #[serde(rename = "Photo 5", deserialize_with = "deserialize_optional_path")]
     pub photo_5: Option<PathBuf>,
+    #[serde(default)]
+    pub latitude: Option<f64>,
+    #[serde(default)]
+    pub longitude: Option<f64>
 }
 
 fn deserialize_optional_path<'de, D>(deserializer: D) -> Result<Option<PathBuf>, D::Error>
