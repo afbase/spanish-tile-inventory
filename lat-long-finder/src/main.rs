@@ -1,8 +1,8 @@
-use structopt::StructOpt;
-use std::path::PathBuf;
-use std::error::Error;
 use csv::{Reader, Writer};
 use data::inventory::TileInventory;
+use std::error::Error;
+use std::path::PathBuf;
+use structopt::StructOpt;
 use utils::csv_parser::geocode_inventory;
 
 #[derive(StructOpt)]
