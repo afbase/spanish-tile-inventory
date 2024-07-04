@@ -1,8 +1,9 @@
-use data::inventory::TileInventory;
-use js_sys::{Array, Object, Reflect};
-use wasm_bindgen::{closure::Closure, JsValue};
-use web_sys::{Element};
 use yew::prelude::*;
+use web_sys::{Element, HtmlElement};
+use wasm_bindgen::{JsCast, JsValue, closure::Closure};
+use js_sys::{Object, Reflect, Array};
+use leaflet::{Map, MapOptions, LatLng, TileLayer, TileLayerOptions, Marker, Icon, IconOptions, Popup, PopupOptions, Point, Layer};
+use data::inventory::TileInventory;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -13,8 +14,8 @@ pub struct Props {
 
 pub struct MapView {
     map_ref: NodeRef,
-    map: Option<JsValue>,
-    markers: Vec<JsValue>,
+    map: Option<Map>,
+    markers: Vec<Marker>,
 }
 
 impl Component for MapView {
@@ -47,115 +48,71 @@ impl Component for MapView {
 
 impl MapView {
     fn init_map(&mut self, element: Element) {
-        let window = web_sys::window().unwrap();
-        let leaflet = Reflect::get(&window, &JsValue::from_str("L")).unwrap();
+        let map_options = MapOptions::new();
+        let html_element: HtmlElement = element.dyn_into().unwrap();
+        let map = Map::new_with_element(&html_element, &map_options);
 
-        let map = Reflect::get(&leaflet, &JsValue::from_str("map")).unwrap();
-        let map = js_sys::Function::new_with_args("element", "return new this(element)")
-            .call2(&map, &JsValue::from(element), &Object::new())
-            .unwrap();
+        let center = LatLng::new(29.9511, -90.0715);
+        map.set_view(&center, 13.0);
 
-        let set_view = Reflect::get(&map, &JsValue::from_str("setView")).unwrap();
-        let lat_lng = Array::of2(&JsValue::from_f64(29.9511), &JsValue::from_f64(-90.0715));
-        js_sys::Function::new_with_args("latlng, zoom", "this.setView(latlng, zoom)")
-            .call3(&set_view, &map, &lat_lng, &JsValue::from_f64(13.0))
-            .unwrap();
-
-        let tile_layer = Reflect::get(&leaflet, &JsValue::from_str("tileLayer")).unwrap();
-        let tile_layer =
-            js_sys::Function::new_with_args("url, options", "return new this(url, options)")
-                .call2(
-                    &tile_layer,
-                    &JsValue::from_str("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),
-                    &Object::new(),
-                )
-                .unwrap();
-
-        let add_to = Reflect::get(&tile_layer, &JsValue::from_str("addTo")).unwrap();
-        js_sys::Function::new_with_args("map", "this.addTo(map)")
-            .call1(&add_to, &map)
-            .unwrap();
+        let tile_layer_url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+        let tile_layer = TileLayer::new(tile_layer_url);
+        map.add_layer(&tile_layer);
 
         self.map = Some(map);
     }
 
     fn add_markers(&mut self, ctx: &Context<Self>) {
-        let window = web_sys::window().unwrap();
-        let leaflet = Reflect::get(&window, &JsValue::from_str("L")).unwrap();
-        let marker_fn = Reflect::get(&leaflet, &JsValue::from_str("marker")).unwrap();
+        if let Some(map) = &self.map {
+            for item in &ctx.props().inventory {
+                let lat_lng = LatLng::new(item.latitude, item.longitude);
+                let marker = Marker::new(&lat_lng);
+                
+                let mut icon_options = IconOptions::new();
+                icon_options.set_icon_url("/static/markers/marker-icon-2x-blue.png".to_string());
+                icon_options.set_icon_size(Point::new(25.0, 41.0));
+                let icon = Icon::new(&icon_options);
+                marker.set_icon(&icon);
 
-        for item in &ctx.props().inventory {
-            let lat_lng = Array::of2(
-                &JsValue::from_f64(item.latitude),
-                &JsValue::from_f64(item.longitude),
-            );
-            let marker = js_sys::Function::new_with_args("latlng", "return new this(latlng)")
-                .call1(&marker_fn, &lat_lng)
-                .unwrap();
+                let popup_content = format!("{}: {} damaged tiles", item.street_sign, item.number_of_tiles_damaged);
+                let popup_options = PopupOptions::new();
+                let popup = Popup::new(&popup_options, None);
+                popup.set_content(&JsValue::from_str(&popup_content));
+                marker.bind_popup(&popup);
 
-            let add_to = Reflect::get(&marker, &JsValue::from_str("addTo")).unwrap();
-            js_sys::Function::new_with_args("map", "this.addTo(map)")
-                .call1(&add_to, self.map.as_ref().unwrap())
-                .unwrap();
+                marker.add_to(map);
 
-            // Add click event listener
-            let on_item_select = ctx.props().on_item_select.clone();
-            let item_clone = item.clone();
-            let click_closure = Closure::wrap(Box::new(move || {
-                on_item_select.emit(Some(item_clone.clone()));
-            }) as Box<dyn Fn()>);
+                let on_item_select = ctx.props().on_item_select.clone();
+                let item_clone = item.clone();
+                let closure = Closure::wrap(Box::new(move || {
+                    on_item_select.emit(Some(item_clone.clone()));
+                }) as Box<dyn Fn()>);
 
-            let on = Reflect::get(&marker, &JsValue::from_str("on")).unwrap();
-            js_sys::Function::new_with_args("event, handler", "this.on(event, handler)")
-                .call2(&on, &JsValue::from_str("click"), click_closure.as_ref())
-                .unwrap();
+                marker.on("click", closure.as_ref().unchecked_ref());
+                closure.forget();
 
-            click_closure.forget(); // Prevent the closure from being dropped
-
-            self.markers.push(marker);
+                self.markers.push(marker);
+            }
         }
     }
 
     fn update_markers(&self, ctx: &Context<Self>) {
-        let window = web_sys::window().unwrap();
-        let leaflet = Reflect::get(&window, &JsValue::from_str("L")).unwrap();
-        let icon_fn = Reflect::get(&leaflet, &JsValue::from_str("icon")).unwrap();
-
         for (index, item) in ctx.props().inventory.iter().enumerate() {
-            let is_selected = ctx
-                .props()
-                .selected_item
-                .as_ref()
-                .map_or(false, |selected| selected.id == item.id);
+            let is_selected = ctx.props().selected_item.as_ref().map_or(false, |selected| selected.id == item.id);
             let icon_url = if is_selected {
                 "/static/markers/marker-icon-2x-red.png"
             } else {
                 "/static/markers/marker-icon-2x-blue.png"
             };
 
-            let icon_options = Object::new();
-            Reflect::set(
-                &icon_options,
-                &JsValue::from_str("iconUrl"),
-                &JsValue::from_str(icon_url),
-            )
-            .unwrap();
-            Reflect::set(
-                &icon_options,
-                &JsValue::from_str("iconSize"),
-                &Array::of2(&JsValue::from_f64(25.0), &JsValue::from_f64(41.0)),
-            )
-            .unwrap();
+            let mut icon_options = IconOptions::new();
+            icon_options.set_icon_url(icon_url.to_string());
+            icon_options.set_icon_size(Point::new(25.0, 41.0));
+            let icon = Icon::new(&icon_options);
 
-            let icon = js_sys::Function::new_with_args("options", "return new this(options)")
-                .call1(&icon_fn, &icon_options)
-                .unwrap();
-
-            let set_icon =
-                Reflect::get(&self.markers[index], &JsValue::from_str("setIcon")).unwrap();
-            js_sys::Function::new_with_args("icon", "this.setIcon(icon)")
-                .call1(&set_icon, &icon)
-                .unwrap();
+            if let Some(marker) = self.markers.get(index) {
+                marker.set_icon(&icon);
+            }
         }
     }
 }

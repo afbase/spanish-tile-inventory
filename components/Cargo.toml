@@ -4,8 +4,9 @@ version.workspace = true
 edition = "2021"
 
 [dependencies]
-yew = { workspace = true }
-web-sys = { workspace = true }
-js-sys = { workspace = true }
-wasm-bindgen = { workspace = true }
 data = { path = "../data" }
+js-sys = { workspace = true }
+leaflet = { workspace = true }
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true }
+yew = { workspace = true }
