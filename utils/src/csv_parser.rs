@@ -95,7 +95,7 @@ pub fn write_csv<P: AsRef<Path>>(
     let mut writer = Writer::from_path(output_path)?;
 
     // Write the header
-    writer.write_record(&[
+    writer.write_record([
         "ID",
         "Street Sign",
         "Street Address",

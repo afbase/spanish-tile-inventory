@@ -84,8 +84,10 @@ impl MapView {
     }
 
     fn create_markers(&mut self, ctx: &Context<Self>, map: &Map) {
+        let default = 0.0;
         for item in &ctx.props().inventory {
-            let marker = Marker::new(&LatLng::new(item.latitude, item.longitude));
+            let (lat, long) = (item.latitude.unwrap_or(default), item.longitude.unwrap_or(default));
+            let marker = Marker::new(&LatLng::new(lat, long));
             let popup_content = format!(
                 "{}: {} damaged tiles",
                 item.street_sign, item.number_of_tiles_damaged
