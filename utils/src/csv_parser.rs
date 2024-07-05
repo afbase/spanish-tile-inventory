@@ -15,8 +15,8 @@ pub enum CsvError {
 
 pub fn parse_csv_str(input_bytes: &[u8]) -> Result<Vec<TileInventory>, CsvError> {
     let mut reader = ReaderBuilder::new()
-    .has_headers(true)
-    .from_reader(input_bytes);
+        .has_headers(true)
+        .from_reader(input_bytes);
     let mut inventory = Vec::new();
 
     for (index, result) in reader.deserialize::<TileInventory>().enumerate() {

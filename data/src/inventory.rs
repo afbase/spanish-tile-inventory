@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use std::hash::{Hash, Hasher};
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct TileInventory {
     #[serde(rename = "ID")]
     pub id: u32,
@@ -36,3 +37,18 @@ where
     let s: Option<String> = Option::deserialize(deserializer)?;
     Ok(s.filter(|s| !s.is_empty()).map(PathBuf::from))
 }
+
+impl Hash for TileInventory {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+        self.street_address.hash(state);
+    }
+}
+
+impl PartialEq for TileInventory {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+        && self.street_address == other.street_address
+    }
+}
+impl Eq for TileInventory {}

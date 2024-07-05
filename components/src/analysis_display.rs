@@ -1,10 +1,12 @@
 use data::inventory::TileInventory;
 use web_sys::HtmlSelectElement;
 use yew::prelude::*;
+use std::path::PathBuf;
 
 pub struct AnalysisDisplay {
     selected_street: Option<String>,
     selected_address: Option<String>,
+    current_photo_index: usize,
 }
 
 #[derive(Properties, PartialEq)]
@@ -17,6 +19,8 @@ pub struct Props {
 pub enum Msg {
     StreetSelected(String),
     AddressSelected(String),
+    NextPhoto,
+    PreviousPhoto,
 }
 
 impl Component for AnalysisDisplay {
@@ -27,6 +31,7 @@ impl Component for AnalysisDisplay {
         Self {
             selected_street: None,
             selected_address: None,
+            current_photo_index: 0,
         }
     }
 
@@ -35,13 +40,41 @@ impl Component for AnalysisDisplay {
             Msg::StreetSelected(street) => {
                 self.selected_street = Some(street);
                 self.selected_address = None;
+                self.current_photo_index = 0;
                 self.notify_selection(ctx);
                 true
             }
             Msg::AddressSelected(address) => {
                 self.selected_address = Some(address);
+                self.current_photo_index = 0;
                 self.notify_selection(ctx);
                 true
+            }
+            Msg::NextPhoto => {
+                if let Some(item) = &ctx.props().selected_item {
+                    let photos = self.get_photos(item);
+                    if !photos.is_empty() {
+                        self.current_photo_index = (self.current_photo_index + 1) % photos.len();
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            }
+            Msg::PreviousPhoto => {
+                if let Some(item) = &ctx.props().selected_item {
+                    let photos = self.get_photos(item);
+                    if !photos.is_empty() {
+                        self.current_photo_index = (self.current_photo_index + photos.len() - 1) % photos.len();
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
             }
         }
     }
@@ -71,18 +104,19 @@ impl Component for AnalysisDisplay {
             <div>
                 <h2>{"Inventory Analysis"}</h2>
                 <div>
-                    <select onchange={ctx.link().callback(|e: Event| Msg::StreetSelected(e.target_unchecked_into::<HtmlSelectElement>().value()))}>
-                        <option selected=true disabled=true>{"Select Street Sign"}</option>
-                        { for street_signs.iter().map(|street| html! { <option value={street.clone()}>{street}</option> }) }
+                    <select value={self.selected_street.clone().unwrap_or_default()} onchange={ctx.link().callback(|e: Event| Msg::StreetSelected(e.target_unchecked_into::<HtmlSelectElement>().value()))}>
+                        <option disabled=true selected={self.selected_street.is_none()}>{"Select Street Sign"}</option>
+                        { for street_signs.iter().map(|street| html! { <option value={street.clone()} selected={Some(street) == self.selected_street.as_ref()}>{street}</option> }) }
                     </select>
                 </div>
                 <div>
-                    <select disabled={self.selected_street.is_none()} onchange={ctx.link().callback(|e: Event| Msg::AddressSelected(e.target_unchecked_into::<HtmlSelectElement>().value()))}>
-                        <option selected=true disabled=true>{"Select Address"}</option>
-                        { for addresses.iter().map(|address| html! { <option value={address.clone()}>{address}</option> }) }
+                    <select value={self.selected_address.clone().unwrap_or_default()} disabled={self.selected_street.is_none()} onchange={ctx.link().callback(|e: Event| Msg::AddressSelected(e.target_unchecked_into::<HtmlSelectElement>().value()))}>
+                        <option disabled=true selected={self.selected_address.is_none()}>{"Select Address"}</option>
+                        { for addresses.iter().map(|address| html! { <option value={address.clone()} selected={Some(address) == self.selected_address.as_ref()}>{address}</option> }) }
                     </select>
                 </div>
                 { self.render_selected_item_info(ctx) }
+                { self.render_photo_viewer(ctx) }
             </div>
         }
     }
@@ -91,6 +125,7 @@ impl Component for AnalysisDisplay {
         if let Some(item) = &ctx.props().selected_item {
             self.selected_street = Some(item.street_sign.clone());
             self.selected_address = Some(item.street_address.clone());
+            self.current_photo_index = 0;
             true
         } else {
             false
@@ -127,5 +162,41 @@ impl AnalysisDisplay {
         } else {
             html! { <p>{"No item selected"}</p> }
         }
+    }
+
+    fn render_photo_viewer(&self, ctx: &Context<Self>) -> Html {
+        if let Some(item) = &ctx.props().selected_item {
+            let photos = self.get_photos(item);
+            if !photos.is_empty() {
+                html! {
+                    <div class="photo-viewer">
+                        <img src={photos[self.current_photo_index].clone()} alt="Tile inventory" />
+                        <div>
+                            <button onclick={ctx.link().callback(|_| Msg::PreviousPhoto)}>{"Previous"}</button>
+                            <button onclick={ctx.link().callback(|_| Msg::NextPhoto)}>{"Next"}</button>
+                        </div>
+                        <p>{format!("Photo {} of {}", self.current_photo_index + 1, photos.len())}</p>
+                    </div>
+                }
+            } else {
+                html! { <p>{"No photos available for this sign"}</p> }
+            }
+        } else {
+            html! {}
+        }
+    }
+
+    fn get_photos(&self, item: &TileInventory) -> Vec<String> {
+        vec![
+            item.photo_1.clone(),
+            item.photo_2.clone(),
+            item.photo_3.clone(),
+            item.photo_4.clone(),
+            item.photo_5.clone(),
+        ]
+        .into_iter()
+        .flatten()
+        .flat_map(|p| p.into_os_string().into_string()) 
+        .collect()
     }
 }

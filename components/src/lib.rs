@@ -7,54 +7,50 @@ pub use map_view::MapView;
 
 use data::inventory::TileInventory;
 use yew::prelude::*;
-
-#[derive(Properties, PartialEq)]
-pub struct InventoryViewProps {
-    pub inventory: Vec<TileInventory>,
-}
+use gloo_console as console_logger;
 
 pub enum Msg {
     ItemSelected(Option<TileInventory>),
 }
 
-pub struct InventoryView {
-    selected_item: Option<TileInventory>,
+// pub struct InventoryView {
+//     selected_item: Option<TileInventory>,
+// }
+
+#[derive(Properties, PartialEq)]
+pub struct InventoryViewProps {
+    pub inventory: Vec<TileInventory>,
+    pub selected_item: Option<TileInventory>,
+    pub on_item_select: Callback<Option<TileInventory>>,
 }
 
+pub struct InventoryView;
+
 impl Component for InventoryView {
-    type Message = Msg;
+    type Message = ();
     type Properties = InventoryViewProps;
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            selected_item: None,
-        }
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::ItemSelected(item) => {
-                self.selected_item = item;
-                true
-            }
-        }
+        Self
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let on_item_select = ctx.link().callback(Msg::ItemSelected);
-
+        let on_item_select = ctx.props().on_item_select.clone();
+        console_logger::log!("InventoryView's inventory count before rendering MapView: ", ctx.props().inventory.len());
+        
         html! {
             <div>
-                <MapView
-                    inventory={ctx.props().inventory.clone()}
-                    selected_item={self.selected_item.clone()}
+                <MapView 
+                    inventory={ctx.props().inventory.clone()} 
+                    selected_item={ctx.props().selected_item.clone()}
                     on_item_select={on_item_select.clone()}
                 />
-                <AnalysisDisplay
+                <AnalysisDisplay 
                     inventory={ctx.props().inventory.clone()}
-                    selected_item={self.selected_item.clone()}
+                    selected_item={ctx.props().selected_item.clone()}
                     on_item_select={on_item_select}
                 />
+                <img src="static/markers/marker-icon-2x-blue.png"/>
             </div>
         }
     }

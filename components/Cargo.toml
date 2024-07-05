@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 data = { path = "../data" }
+gloo-console = { workspace = true }
 js-sys = { workspace = true }
 leaflet = { workspace = true }
 wasm-bindgen = { workspace = true }
