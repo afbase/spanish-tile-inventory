@@ -1,5 +1,5 @@
 [package]
-name = "web"
+name = "spanish-tiles-nola"
 version.workspace =  true
 edition = "2021"
 

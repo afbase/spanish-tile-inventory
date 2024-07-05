@@ -1,12 +1,13 @@
 [workspace]
 resolver = "2"
 members = [
-    # "utils",
-    "data",
-    "components",
     "app",
-    "web", 
-    "lat-long-finder"]
+    "components",
+    "data",
+    "lat-long-finder",
+    "spanish-tiles-nola", 
+    "utils"
+    ]
 
 [workspace.package]
 version = "0.1.0"
