@@ -151,9 +151,9 @@ impl MapView {
             }
         }
     }
-    
+
     // keeping the function signatures just in case
-    // fn add_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory) 
+    // fn add_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory)
     // fn update_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory)
 
     fn update_markers(&mut self, ctx: &Context<Self>) {

@@ -149,14 +149,28 @@ impl AnalysisDisplay {
 
     fn render_selected_item_info(&self, ctx: &Context<Self>) -> Html {
         if let Some(item) = &ctx.props().selected_item {
-            html! {
-                <div>
-                    <h3>{"Selected Item"}</h3>
-                    <p>{format!("Street Sign: {}", item.street_sign)}</p>
-                    <p>{format!("Address: {}", item.street_address)}</p>
-                    <p>{format!("Approximate Latitude: {:?}", item.latitude)}</p>
-                    <p>{format!("Approximate Longitude: {:?}", item.longitude)}</p>
-                </div>
+            match (item.latitude, item.longitude) {
+                (Some(latitude), Some(longitude)) => {
+                    html! {
+                        <div>
+                            <h3>{"Selected Item"}</h3>
+                            <p>{format!("Street Sign: {}", item.street_sign)}</p>
+                            <p>{format!("Address: {}", item.street_address)}</p>
+                            <p>{format!("Approximate Latitude: {}", latitude)}</p>
+                            <p>{format!("Approximate Longitude: {}", longitude)}</p>
+                        </div>
+                    }
+                }
+                (_, _) => {
+                    html! {
+                        <div>
+                            <h3>{"Selected Item"}</h3>
+                            <p>{format!("Street Sign: {}", item.street_sign)}</p>
+                            <p>{format!("Address: {}", item.street_address)}</p>
+                            <p>{format!("No Latitude/Longitude value derived. :-( {}","")}</p>
+                        </div>
+                    }
+                }
             }
         } else {
             html! { <p>{"No item selected"}</p> }
