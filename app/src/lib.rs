@@ -1,11 +1,9 @@
-use std::str::from_utf8;
-
 use components::InventoryView;
-use data::inventory::TileInventory;
+use data::inventory::{self, TileInventory};
 use gloo_console as console;
-use utils::csv_parser::parse_csv;
+use utils::csv_parser::parse_csv_str;
 use yew::prelude::*;
-
+pub static INVENTORY_CSV_BYTES: &[u8] = include_bytes!("../../inventory_latlong.csv");
 pub struct App {
     inventory: Vec<TileInventory>,
     selected_item: Option<TileInventory>,
@@ -23,9 +21,7 @@ impl Component for App {
     fn create(ctx: &Context<Self>) -> Self {
         // Load inventory data
         ctx.link().send_future(async {
-            let csv_data = include_bytes!("../../inventory_latlong.csv");
-            let csv_data_str = from_utf8(csv_data).unwrap_or("");
-            let inventory = parse_csv(csv_data_str).expect("Failed to parse CSV data");
+            let inventory = parse_csv_str(INVENTORY_CSV_BYTES).expect("Failed to parse CSV data");
             Msg::InventoryLoaded(inventory)
         });
 

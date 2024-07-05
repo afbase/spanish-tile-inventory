@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use structopt::StructOpt;
-use utils::csv_parser::{geocode_inventory, parse_csv, write_csv, CsvParserError};
+use utils::csv_parser::{parse_csv, write_csv, CsvError};
+use utils::geocoding::{geocode_inventory, GeocodingError};
 
 #[derive(StructOpt)]
 struct Cli {
@@ -18,7 +19,15 @@ async fn main() {
     }
 }
 
-async fn run() -> Result<(), CsvParserError> {
+#[derive(thiserror::Error, Debug)]
+enum AppError {
+    #[error("CSV error: {0}")]
+    Csv(#[from] CsvError),
+    #[error("Geocoding error: {0}")]
+    Geocoding(#[from] GeocodingError),
+}
+
+async fn run() -> Result<(), AppError> {
     let args = Cli::from_args();
 
     println!("Reading CSV from {:?}", args.input);

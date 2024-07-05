@@ -1,7 +1,7 @@
 [workspace]
-resolver = "1"
+resolver = "2"
 members = [
-    "utils",
+    # "utils",
     "data",
     "components",
     "app",

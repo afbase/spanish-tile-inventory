@@ -4,6 +4,7 @@ edition = "2021"
 version.workspace = true
 
 [dependencies]
-utils = { path = "../utils" }
 structopt = { workspace = true }
 tokio = { workspace = true }
+utils = { path = "../utils", features = ["no-wasm"] }
+thiserror = { workspace = true }

@@ -3,11 +3,17 @@ name = "utils"
 version.workspace = true
 edition = "2021"
 
+[features]
+default = []
+no-wasm = ["reqwest", "tokio", "urlencoding"]
+
 [dependencies]
 csv = { workspace = true }
 data = { path = "../data" }
-reqwest = { workspace = true, features=["blocking"] }
-serde = { workspace=true }
+serde = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true }
-urlencoding = { workspace = true }
+
+# Optional dependencies for no-wasm feature
+reqwest = { workspace = true, features = ["json"], optional = true }
+tokio = { workspace = true, optional = true }
+urlencoding = { workspace = true, optional = true }
