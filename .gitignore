@@ -11,3 +11,5 @@ Cargo.lock
 # clinton things
 .vscode/
 /web/dist
+
+consolidate.txt
