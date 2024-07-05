@@ -1,4 +1,4 @@
-use std::{collections::HashMap, marker};
+use std::{collections::HashMap};
 use data::inventory::TileInventory;
 use gloo_console as console_logger;
 use leaflet::{
@@ -97,13 +97,13 @@ impl MapView {
         for item in &ctx.props().inventory {
             if let (Some(lat), Some(long)) = (item.latitude, item.longitude) {
                 let lat_long = LatLng::new(lat, long);
-                let mut icon_options = IconOptions::new();
+                let icon_options = IconOptions::new();
                 icon_options.set_icon_url("static/markers/marker-icon-2x-blue.png".to_string());
                 icon_options.set_icon_size(Point::new(50.0, 82.0));
                 icon_options.set_icon_anchor(Point::new(25.0, 82.0));
                 icon_options.set_popup_anchor(Point::new(0.0, -82.0));
                 let icon = Icon::new(&icon_options);
-                let mut marker_options = MarkerOptions::new();
+                let marker_options = MarkerOptions::new();
                 marker_options.set_icon(icon);
                 let marker = Marker::new_with_options(&lat_long, &marker_options);
                 let popup_content = format!(
@@ -143,14 +143,14 @@ impl MapView {
             if let (Some(lat), Some(long)) = (tile_inventory.latitude, tile_inventory.longitude) {
                 let lat_long = LatLng::new(lat, long);
                 console_logger::log!("Marker {}: lat: {}, lng: {}", lat_long.lat(), lat_long.lng());
-                let mut icon_options = IconOptions::new();
+                let icon_options = IconOptions::new();
                 let icon_url = "static/markers/marker-icon-2x-red.png";
                 icon_options.set_icon_url(icon_url.to_string());
                 icon_options.set_icon_size(Point::new(50.0, 82.0));
                 icon_options.set_icon_anchor(Point::new(25.0, 82.0));
                 icon_options.set_popup_anchor(Point::new(0.0, -82.0));
                 let icon = Icon::new(&icon_options);
-                let mut marker_options = MarkerOptions::new();
+                let marker_options = MarkerOptions::new();
                 marker_options.set_icon(icon);
                 let marker = Marker::new_with_options(&lat_long, &marker_options);
                 Some((tile_inventory.clone(), marker))
@@ -215,7 +215,7 @@ impl MapView {
             let pos = marker.get_lat_lng();
             console_logger::log!("Marker ", i, ", lat: ", pos.lat(),", lng: ", pos.lng());
             let is_selected = selected_item.map_or(false, |selected| selected.id == tile_inventory.id);
-            let mut icon_options = IconOptions::new();
+            let icon_options = IconOptions::new();
             let icon_url = if is_selected {
                 "static/markers/marker-icon-2x-red.png"
             } else {

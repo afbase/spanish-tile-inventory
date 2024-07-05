@@ -1,7 +1,6 @@
 use data::inventory::TileInventory;
 use web_sys::HtmlSelectElement;
 use yew::prelude::*;
-use std::path::PathBuf;
 
 pub struct AnalysisDisplay {
     selected_street: Option<String>,
