@@ -11,7 +11,6 @@ use yew::prelude::*;
 pub struct MapView {
     map_ref: NodeRef,
     map: Option<Map>,
-    // markers: Vec<(Marker, TileInventory)>,
     markers: HashMap<TileInventory, Marker>,
 }
 
@@ -81,7 +80,7 @@ impl MapView {
         let center = LatLng::new(29.9584, -90.0644);
         map.set_view(&center, 15.0);
 
-        let tile_layer_url = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+        let tile_layer_url = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
         let tile_layer = TileLayer::new(tile_layer_url);
         map.add_layer(&tile_layer);
 
