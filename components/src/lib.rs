@@ -53,7 +53,7 @@ impl Component for InventoryView {
                     selected_item={ctx.props().selected_item.clone()}
                     on_item_select={on_item_select}
                 />
-                <img src="static/markers/marker-icon-2x-blue.png"/>
+                <img src="static/markers/marker-icon-blue.png"/>
             </div>
         }
     }

@@ -111,7 +111,7 @@ impl MapView {
                 if let (Some(lat), Some(long)) = (item.latitude, item.longitude) {
                     let lat_long = LatLng::new(lat, long);
                     let icon_options = IconOptions::new();
-                    icon_options.set_icon_url("static/markers/marker-icon-2x-blue.png".to_string());
+                    icon_options.set_icon_url("static/markers/marker-icon-blue.png".to_string());
                     icon_options.set_icon_size(Point::new(50.0, 82.0));
                     icon_options.set_icon_anchor(Point::new(25.0, 82.0));
                     icon_options.set_popup_anchor(Point::new(0.0, -82.0));
@@ -151,37 +151,10 @@ impl MapView {
             }
         }
     }
-
-    // fn add_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory) {
-    //     if let (Some(lat), Some(long)) = (item.latitude, item.longitude) {
-    //         let lat_long = LatLng::new(lat, long);
-    //         let icon_options = IconOptions::new();
-    //         icon_options.set_icon_url("static/markers/marker-icon-2x-blue.png".to_string());
-    //         icon_options.set_icon_size(Point::new(50.0, 82.0));
-    //         icon_options.set_icon_anchor(Point::new(25.0, 82.0));
-    //         icon_options.set_popup_anchor(Point::new(0.0, -82.0));
-    //         let icon = Icon::new(&icon_options);
-    //         let marker_options = MarkerOptions::new();
-    //         marker_options.set_icon(icon);
-    //         let marker = Marker::new_with_options(&lat_long, &marker_options);
-
-    //         let item_clone = item.clone();
-    //         let on_item_select = ctx.props().on_item_select.clone();
-    //         let closure = Closure::wrap(Box::new(move || {
-    //             console_logger::log!("Marker clicked: ", item_clone.street_sign.clone());
-    //             on_item_select.emit(Some(item_clone.clone()));
-    //         }) as Box<dyn Fn()>);
-
-    //         marker.on("click", closure.as_ref().unchecked_ref());
-    //         closure.forget();
-
-    //         marker.add_to(map);
-    //         console_logger::log!("Marker added: ", item.street_sign.clone(), " at ", lat, ", ", long);
-    //         self.markers.insert(item.id, marker);
-    //     } else {
-    //         console_logger::log!("Skipping marker for ", item.street_sign.clone(), " due to missing coordinates");
-    //     }
-    // }
+    
+    // keeping the function signatures just in case
+    // fn add_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory) 
+    // fn update_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory)
 
     fn update_markers(&mut self, ctx: &Context<Self>) {
         if let Some(map) = &self.map {
@@ -198,7 +171,7 @@ impl MapView {
                             let lat_long = LatLng::new(lat, long);
                             let icon_options = IconOptions::new();
                             icon_options
-                                .set_icon_url("static/markers/marker-icon-2x-blue.png".to_string());
+                                .set_icon_url("static/markers/marker-icon-blue.png".to_string());
                             icon_options.set_icon_size(Point::new(50.0, 82.0));
                             icon_options.set_icon_anchor(Point::new(25.0, 82.0));
                             icon_options.set_popup_anchor(Point::new(0.0, -82.0));
@@ -248,9 +221,9 @@ impl MapView {
                         .map_or(false, |selected| selected.id == item.id);
                     let icon_options = IconOptions::new();
                     let icon_url = if is_selected {
-                        "static/markers/marker-icon-2x-red.png"
+                        "static/markers/marker-icon-green.png"
                     } else {
-                        "static/markers/marker-icon-2x-blue.png"
+                        "static/markers/marker-icon-blue.png"
                     };
                     icon_options.set_icon_url(icon_url.to_string());
                     icon_options.set_icon_size(Point::new(50.0, 82.0));
@@ -285,42 +258,3 @@ impl MapView {
         }
     }
 }
-
-// fn update_marker(&mut self, ctx: &Context<Self>, map: &Map, item: &TileInventory) {
-//     if let (Some(lat), Some(long)) = (item.latitude, item.longitude) {
-//         let lat_long = LatLng::new(lat, long);
-
-//         if let Some(marker) = self.markers.get(&item.id) {
-//             marker.set_lat_lng(&lat_long);
-//         } else {
-//             self.add_marker(ctx, map, item);
-//         }
-
-//         let is_selected = ctx.props().selected_item.as_ref().map_or(false, |selected| selected.id == item.id);
-//         let icon_options = IconOptions::new();
-//         let icon_url = if is_selected {
-//             "static/markers/marker-icon-2x-red.png"
-//         } else {
-//             "static/markers/marker-icon-2x-blue.png"
-//         };
-//         icon_options.set_icon_url(icon_url.to_string());
-//         icon_options.set_icon_size(Point::new(50.0, 82.0));
-//         icon_options.set_icon_anchor(Point::new(25.0, 82.0));
-//         icon_options.set_popup_anchor(Point::new(0.0, -82.0));
-//         let icon = Icon::new(&icon_options);
-
-//         if let Some(marker) = self.markers.get(&item.id) {
-//             marker.set_icon(&icon);
-//         }
-
-//         if is_selected {
-//             console_logger::log!("Selected marker: ", item.street_sign.clone(), " with icon: ", icon_url);
-//         }
-//     } else {
-//         if let Some(marker) = self.markers.remove(&item.id) {
-//             marker.remove();
-//         }
-//         console_logger::log!("Removed marker for ", item.street_sign.clone(), " due to missing coordinates");
-//     }
-//     }
-// }
