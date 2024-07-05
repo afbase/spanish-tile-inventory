@@ -6,8 +6,8 @@ pub use analysis_display::AnalysisDisplay;
 pub use map_view::MapView;
 
 use data::inventory::TileInventory;
-use yew::prelude::*;
 use gloo_console as console_logger;
+use yew::prelude::*;
 
 pub enum Msg {
     ItemSelected(Option<TileInventory>),
@@ -36,16 +36,19 @@ impl Component for InventoryView {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let on_item_select = ctx.props().on_item_select.clone();
-        console_logger::log!("InventoryView's inventory count before rendering MapView: ", ctx.props().inventory.len());
-        
+        console_logger::log!(
+            "InventoryView's inventory count before rendering MapView: ",
+            ctx.props().inventory.len()
+        );
+
         html! {
             <div>
-                <MapView 
-                    inventory={ctx.props().inventory.clone()} 
+                <MapView
+                    inventory={ctx.props().inventory.clone()}
                     selected_item={ctx.props().selected_item.clone()}
                     on_item_select={on_item_select.clone()}
                 />
-                <AnalysisDisplay 
+                <AnalysisDisplay
                     inventory={ctx.props().inventory.clone()}
                     selected_item={ctx.props().selected_item.clone()}
                     on_item_select={on_item_select}

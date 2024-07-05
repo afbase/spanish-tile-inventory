@@ -66,7 +66,8 @@ impl Component for AnalysisDisplay {
                 if let Some(item) = &ctx.props().selected_item {
                     let photos = self.get_photos(item);
                     if !photos.is_empty() {
-                        self.current_photo_index = (self.current_photo_index + photos.len() - 1) % photos.len();
+                        self.current_photo_index =
+                            (self.current_photo_index + photos.len() - 1) % photos.len();
                         true
                     } else {
                         false
@@ -195,7 +196,7 @@ impl AnalysisDisplay {
         ]
         .into_iter()
         .flatten()
-        .flat_map(|p| p.into_os_string().into_string()) 
+        .flat_map(|p| p.into_os_string().into_string())
         .collect()
     }
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 use std::hash::{Hash, Hasher};
+use std::path::PathBuf;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct TileInventory {
@@ -47,8 +47,7 @@ impl Hash for TileInventory {
 
 impl PartialEq for TileInventory {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
-        && self.street_address == other.street_address
+        self.id == other.id && self.street_address == other.street_address
     }
 }
 impl Eq for TileInventory {}
