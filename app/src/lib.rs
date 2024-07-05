@@ -23,7 +23,7 @@ impl Component for App {
     fn create(ctx: &Context<Self>) -> Self {
         // Load inventory data
         ctx.link().send_future(async {
-            let csv_data = include_bytes!("../../inventory.csv");
+            let csv_data = include_bytes!("../../inventory_latlong.csv");
             let csv_data_str = from_utf8(csv_data).unwrap_or("");
             let inventory = parse_csv(csv_data_str).expect("Failed to parse CSV data");
             Msg::InventoryLoaded(inventory)

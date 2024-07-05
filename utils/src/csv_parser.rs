@@ -30,17 +30,19 @@ pub enum CsvParserError {
 pub async fn geocode(address: &str) -> Result<(Option<f64>, Option<f64>), CsvParserError> {
     let client = Client::new();
     let url = format!(
-        "https://nominatim.openstreetmap.org/search?format=json&q={},New Orleans&limit=1",
+        "https://nominatim.openstreetmap.org/search?format=json&q={}&limit=1",
         urlencoding::encode(address)
     );
+    println!("{}", url);
 
     let request = client
         .get(&url)
         .header("User-Agent", "TileInventoryApp/1.0");
 
     let response = request.send().await?;
+    // let response_txt = response.text().await?;
+    // println!("{}",response_txt);
     let response: Vec<NominatimResponse> = response.json().await?;
-
     if let Some(result) = response.first() {
         let lat = result
             .lat
@@ -60,8 +62,8 @@ pub async fn geocode_inventory(inventory: &mut [TileInventory]) -> Result<(), Cs
     for item in inventory.iter_mut() {
         if item.latitude.is_none() || item.longitude.is_none() {
             let address = format!("{}, New Orleans", item.street_address);
-            println!("{}", address);
             let (lat, lon) = geocode(&address).await?;
+            println!("Street: {}, Lat/Long:{:?}/{:?}", address, lat, lon);
             item.latitude = lat;
             item.longitude = lon;
 
