@@ -5,8 +5,8 @@ set -eux pipefail
 GITHUB_TOKEN=${GITHUB_TOKEN:-}
 SPANISH_TILES_REPO=${SPANISH_TILES_REPO:-"spanish-tile-inventory"}
 WEBSITE_REPO=${WEBSITE_REPO:-"afbase.github.io"}
-BLOG_FOLDER="${WEBSITE_REPO}/content/blog/spanish-tiles-inventory"
-YEW_APP="web"
+BLOG_FOLDER="${WEBSITE_REPO}/content/blog/spanish-tiles-nola"
+YEW_APP="spanish-tiles-nola"
 RUST_CHANNEL=${RUST_CHANNEL:-"nightly"}
 RUST_DATE=${RUST_DATE:-"2023-07-01"}
 RUST_HOST=${RUST_HOST:-"x86_64-unknown-linux-gnu"}
