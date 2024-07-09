@@ -42,12 +42,15 @@ impl Hash for TileInventory {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state);
         self.street_address.hash(state);
+        self.street_sign.hash(state);
     }
 }
 
 impl PartialEq for TileInventory {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.street_address == other.street_address
+        self.id == other.id
+            && self.street_address == other.street_address
+            && self.street_sign == other.street_sign
     }
 }
 impl Eq for TileInventory {}
