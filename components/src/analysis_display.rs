@@ -102,7 +102,7 @@ impl Component for AnalysisDisplay {
 
         html! {
             <div>
-                <h2>{"Inventory Analysis"}</h2>
+                <h3>{"Select Specific Sign by Street and Address"}</h3>
                 <div>
                     <select value={self.selected_street.clone().unwrap_or_default()} onchange={ctx.link().callback(|e: Event| Msg::StreetSelected(e.target_unchecked_into::<HtmlSelectElement>().value()))}>
                         <option disabled=true selected={self.selected_street.is_none()}>{"Select Street Sign"}</option>
@@ -153,7 +153,7 @@ impl AnalysisDisplay {
                 (Some(latitude), Some(longitude)) => {
                     html! {
                         <div>
-                            <h3>{"Selected Item"}</h3>
+                            <h4>{"Selected Item"}</h4>
                             <p>{format!("Street Sign: {}", item.street_sign)}</p>
                             <p>{format!("Address: {}", item.street_address)}</p>
                             <p>{format!("Approximate Latitude: {}", latitude)}</p>
@@ -164,7 +164,7 @@ impl AnalysisDisplay {
                 (_, _) => {
                     html! {
                         <div>
-                            <h3>{"Selected Item"}</h3>
+                            <h4>{"Selected Item"}</h4>
                             <p>{format!("Street Sign: {}", item.street_sign)}</p>
                             <p>{format!("Address: {}", item.street_address)}</p>
                             <p>{format!("No Latitude/Longitude value derived. :-( {}","")}</p>

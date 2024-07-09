@@ -72,7 +72,7 @@ impl Component for App {
 
         html! {
             <div class="container mt-4">
-                <h1 class="text-center mb-4">{"Spanish Tile Inventory Analysis"}</h1>
+                <h2 class="text-center mb-4">{"Spanish Tile Inventory Analysis"}</h2>
                 <InventoryView
                     inventory={self.inventory.clone()}
                     selected_item={self.selected_item.clone()}
