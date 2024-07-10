@@ -15,14 +15,14 @@ This project is a web application built with Rust and Yew for analyzing and visu
 - `components`: Reusable UI components
 - `data`: Data structures and analysis functions
 - `utils`: Utility functions (e.g., CSV parsing)
-- `web`: Web entry point and HTML template
+- `spanish-tiles-nola`: Web entry point and HTML template
 
 ## Setup
 
-1. Install Rust and wasm-pack
+1. Install Rust and trunk
 2. Clone this repository
-3. Run `wasm-pack build web --target web` in the project root
-4. Serve the `web` directory using a local server
+3. Run `cd spanish-tiles-nola && trunk build && cp -R ../Inventory_Images dist && cp -R ../static dist && trunk serve` in the project root
+4. Serve the `spanish-tiles-nola` directory using a local server
 
 ## Usage
 
