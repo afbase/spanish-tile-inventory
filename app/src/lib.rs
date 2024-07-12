@@ -4,7 +4,7 @@ use gloo_console as console_logger;
 use utils::csv_parser::parse_csv_str;
 use yew::prelude::*;
 
-pub static INVENTORY_CSV_BYTES: &[u8] = include_bytes!("../../inventory_latlong.csv");
+pub static INVENTORY_CSV_BYTES: &[u8] = include_bytes!("../../2024-07-08-inventory-with-lat-long.csv");
 
 pub struct App {
     inventory: Vec<TileInventory>,
