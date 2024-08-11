@@ -1,9 +1,9 @@
 use log::info;
 use log::LevelFilter;
-use web_sys::{HtmlElement, wasm_bindgen::JsCast};
 use yew::prelude::*;
 use chrono::{DateTime, Utc};
 use log::{Level, Metadata, Record};
+use app::App;
 extern crate console_error_panic_hook;
 pub struct MyLogger;
 pub static MY_LOGGER: MyLogger = MyLogger;
@@ -47,25 +47,6 @@ impl log::Log for MyLogger {
 }
 
 const DIV_BLOG_NAME: &str = "spanish-tiles-nola";
-
-struct App;
-
-impl Component for App {
-    type Message = ();
-    type Properties = ();
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self
-    }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        // Your existing view implementation goes here
-        // This should already include your survey content
-        html! {
-            // Your existing survey content
-        }
-    }
-}
 
 fn main() {
     console_error_panic_hook::set_once();
