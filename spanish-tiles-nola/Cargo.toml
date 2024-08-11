@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 app = { path = "../app" }
 chrono.workspace = true
+console_error_panic_hook.workspace = true
 gloo-console.workspace = true
 js-sys.workspace = true
 log.workspace = true
