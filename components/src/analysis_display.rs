@@ -101,6 +101,7 @@ impl Component for AnalysisDisplay {
         };
 
         html! {
+            
             <div>
                 <h3>{"Select Specific Sign by Street and Address"}</h3>
                 <div>
