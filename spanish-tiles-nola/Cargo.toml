@@ -5,4 +5,22 @@ edition = "2021"
 
 [dependencies]
 app = { path = "../app" }
-yew = { workspace = true }
+chrono.workspace = true
+gloo-console.workspace = true
+js-sys.workspace = true
+log.workspace = true
+wasm-bindgen.workspace = true
+wasm-logger.workspace = true
+web-sys = { version = "0.3", features = [
+    "Document",
+    "Element",
+    "Event",
+    "HtmlElement",
+    "HtmlImageElement",
+    "HtmlInputElement",
+    "HtmlSelectElement",
+    "MouseEvent",
+    "Node",
+    "Window",
+] }
+yew.workspace = true
